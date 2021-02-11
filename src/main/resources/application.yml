@@ -5,3 +5,9 @@ spring:
     url: jdbc:mysql://127.0.0.1:3306?rabbitmq_demo?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=GMT%2B8
     username: root
     password: root
+  rabbitmq:
+    addresses: 127.0.0.1
+    username: guest
+    password: guest
+    port: 5672
+
