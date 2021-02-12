@@ -60,7 +60,40 @@ public class OrderMessageService {
                     null);
 
 
-            channel.queueBind("queue.order", "exchange.order.deliveryman", "key.order");
+            channel.queueBind("queue.order",
+                    "exchange.order.deliveryman",
+                    "key.order");
+
+            channel.basicConsume("queue.order", true, deliverCallback, consumerTag -> {
+            });
+
+            /*---------------------settlement---------------------*/
+
+            channel.exchangeDeclare(
+                    "exchange.settlement.order",
+                    BuiltinExchangeType.FANOUT,
+                    true,
+                    false,
+                    null);
+
+            channel.queueBind(
+                    "queue.order",
+                    "exchange.settlement.order",
+                    "key.order");
+
+            /*---------------------reward---------------------*/
+
+            channel.exchangeDeclare(
+                    "exchange.order.reward",
+                    BuiltinExchangeType.TOPIC,
+                    true,
+                    false,
+                    null);
+
+            channel.queueBind(
+                    "queue.order",
+                    "exchange.order.reward",
+                    "key.order");
 
             channel.basicConsume("queue.order", true, deliverCallback, consumerTag -> {
             });
