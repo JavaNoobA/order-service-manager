@@ -100,6 +100,20 @@ public class OrderMessageService {
                     }
                     break;
                 case RESTAURANT_CONFIRMED:
+                    if (null != orderMessageDTO.getDeliverymanId()) {
+                        orderPO.setStatus(OrderStatus.DELIVERYMAN_CONFIRMED);
+                        orderPO.setDeliverymanId(orderMessageDTO.getDeliverymanId());
+                        orderDetailDao.update(orderPO);
+                        try (Connection connection = connectionFactory.newConnection();
+                             Channel channel = connection.createChannel()) {
+                            String messageToSend = objectMapper.writeValueAsString(orderMessageDTO);
+                            channel.basicPublish("exchange.order.settlement", "key.settlement", null,
+                                    messageToSend.getBytes());
+                        }
+                    } else {
+                        orderPO.setStatus(OrderStatus.FAILED);
+                        orderDetailDao.update(orderPO);
+                    }
                     break;
                 case DELIVERYMAN_CONFIRMED:
                     break;
